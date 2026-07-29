@@ -1,0 +1,26 @@
+name: 'prognosis_demo'
+version: '1.0.0'
+config-version: 2
+
+# Profile name matching profiles.yml configuration
+profile: 'prognosis_demo'
+
+# Directory configuration for dbt assets
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Materialization configurations
+models:
+  prognosis_demo:
+    staging:
+      +materialized: view
+    features:
+      +materialized: table

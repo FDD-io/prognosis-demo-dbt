@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: stg_customer_sessions
+    description: "Staging model for customer session & demographic data sourced from salesforce_sync.raw_customers."
+    columns:
+      - name: customer_id
+        description: "Unique identifier for each customer."
+        data_tests:
+          - unique
+          - not_null
+      - name: user_region
+        description: "Geographic region of customer. Essential contract column required by downstream feature pipelines."
+        data_tests:
+          - not_null
+      - name: signup_date
+        description: "Timestamp when customer created account."
+      - name: plan_tier
+        description: "Active subscription plan tier."

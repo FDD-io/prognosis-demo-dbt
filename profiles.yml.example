@@ -1,0 +1,17 @@
+# Example Snowflake profile configuration for prognosis_demo dbt project.
+# Copy this file to ~/.dbt/profiles.yml or pass via --profiles-dir and update credentials.
+
+prognosis_demo:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: "xy12345.us-east-1"      # Replace with your Snowflake account identifier
+      user: "PROGNOSIS_USER"            # Replace with Snowflake username
+      password: "YOUR_PASSWORD_HERE"    # Replace with Snowflake password
+      role: "ANALYTICS_ROLE"            # Snowflake role
+      database: "PROGNOSIS_DB"          # Snowflake target database
+      warehouse: "COMPUTE_WH"           # Snowflake virtual warehouse
+      schema: "RAW_SALESFORCE"          # Snowflake working schema
+      threads: 4
+      client_session_keep_alive: False

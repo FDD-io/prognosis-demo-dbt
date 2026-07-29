@@ -1,0 +1,24 @@
+version: 2
+
+sources:
+  - name: salesforce_sync
+    description: "Raw CRM customer data synchronized into Snowflake warehouse from Salesforce."
+    database: PROGNOSIS_DB
+    schema: RAW_SALESFORCE
+    tables:
+      - name: raw_customers
+        description: "Raw customer records synced from Salesforce CRM."
+        columns:
+          - name: customer_id
+            description: "Primary key identifier for customer records."
+            data_tests:
+              - unique
+              - not_null
+          - name: user_region
+            description: "Geographic region, required by downstream features."
+            data_tests:
+              - not_null
+          - name: signup_date
+            description: "Timestamp of customer signup."
+          - name: plan_tier
+            description: "Subscription tier level (e.g. Free, Pro, Enterprise)."
