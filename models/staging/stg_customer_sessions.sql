@@ -1,19 +1,19 @@
-{{ config(materialized='view') }}
+-- Prognosis Data Observability - Auto-Generated Remediation Model
+-- Root Cause: Column 'user_region' renamed/removed in favor of 'user_geo' in 'salesforce_sync.raw_customers'.
+-- Remediation: Map 'user_geo' to 'user_region' to restore schema contract for downstream models.
 
-with source as (
-    select * from {{ source('salesforce_sync', 'raw_customers') }}
-),
-
-renamed as (
-    select
+WITH raw_source AS (
+    SELECT
         customer_id,
-        -- Explicit reference to user_region column required by downstream feature transformations.
-        -- BREAKING CHANGE RISK: If upstream source renames user_region -> user_geo, this model breaks.
-        user_region,
-        signup_date,
         plan_tier,
-        current_timestamp() as staged_at
-    from source
+        signup_date,
+        user_geo AS user_region
+    FROM {{ source('salesforce_sync', 'raw_customers') }}
 )
 
-select * from renamed
+SELECT
+    customer_id,
+    plan_tier,
+    signup_date,
+    user_region
+FROM raw_source
