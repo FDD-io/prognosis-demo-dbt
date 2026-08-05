@@ -1,19 +1,12 @@
-{{ config(materialized='view') }}
+-- Modèle de remédiation dbt - Prognosis Observability System
+-- Incident : Renommage de la colonne 'user_region' en 'user_geo' dans la source 'salesforce_sync.raw_customers'.
+-- Impact : Rupture du contrat de schéma pour stg_customer_sessions, engagement_features et dégradation du modèle ML recommendation_v3.
+-- Correctif : Re-projection de toutes les colonnes sources et alias explicite 'user_geo AS user_region' pour réinstaller la rétrocompatibilité.
 
-with source as (
-    select * from {{ source('salesforce_sync', 'raw_customers') }}
-),
-
-renamed as (
-    select
-        customer_id,
-        -- Explicit reference to user_region column required by downstream feature transformations.
-        -- BREAKING CHANGE RISK: If upstream source renames user_region -> user_geo, this model breaks.
-        user_region,
-        signup_date,
-        plan_tier,
-        current_timestamp() as staged_at
-    from source
-)
-
-select * from renamed
+SELECT
+    customer_id,
+    plan_tier,
+    signup_date,
+    user_geo,
+    user_geo AS user_region
+FROM {{ source('salesforce_sync', 'raw_customers') }}
