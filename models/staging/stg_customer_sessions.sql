@@ -1,19 +1,19 @@
-{{ config(materialized='view') }}
+-- Remediation dbt model for salesforce_sync.raw_customers
+-- Incident: Upstream schema contract broken due to column rename from 'user_region' to 'user_geo'.
+-- Fix: Select all active source columns and alias 'user_geo' back to 'user_region' to unblock downstream feature extraction pipelines.
 
-with source as (
-    select * from {{ source('salesforce_sync', 'raw_customers') }}
-),
-
-renamed as (
-    select
+WITH source_data AS (
+    SELECT
         customer_id,
-        -- Explicit reference to user_region column required by downstream feature transformations.
-        -- BREAKING CHANGE RISK: If upstream source renames user_region -> user_geo, this model breaks.
-        user_region,
-        signup_date,
         plan_tier,
-        current_timestamp() as staged_at
-    from source
+        signup_date,
+        user_geo AS user_region
+    FROM {{ source('salesforce_sync', 'raw_customers') }}
 )
 
-select * from renamed
+SELECT
+    customer_id,
+    plan_tier,
+    signup_date,
+    user_region
+FROM source_data
