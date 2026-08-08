@@ -1,19 +1,11 @@
-{{ config(materialized='view') }}
+-- dbt Remediation Model: stg_raw_customers.sql
+-- Incident: Breaking schema change in upstream dataset 'salesforce_sync.raw_customers'.
+-- Root Cause: Column 'user_region' was renamed to 'user_geo'.
+-- Fix: Select source columns and alias 'user_geo' back to 'user_region' to fulfill downstream contracts.
 
-with source as (
-    select * from {{ source('salesforce_sync', 'raw_customers') }}
-),
-
-renamed as (
-    select
-        customer_id,
-        -- Explicit reference to user_region column required by downstream feature transformations.
-        -- BREAKING CHANGE RISK: If upstream source renames user_region -> user_geo, this model breaks.
-        user_region,
-        signup_date,
-        plan_tier,
-        current_timestamp() as staged_at
-    from source
-)
-
-select * from renamed
+SELECT
+    customer_id,
+    plan_tier,
+    signup_date,
+    user_geo AS user_region
+FROM {{ source('salesforce_sync', 'raw_customers') }}
